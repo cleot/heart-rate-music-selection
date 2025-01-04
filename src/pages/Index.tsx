@@ -5,7 +5,7 @@ import SpotifyPlaylist from '@/components/SpotifyPlaylist';
 import NowPlaying from '@/components/NowPlaying';
 import { Button } from '@/components/ui/button';
 import { getSpotifyAuthUrl } from '@/utils/spotify';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { toast } = useToast();
@@ -18,7 +18,6 @@ const Index = () => {
   });
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
 
-  // Mock data for now - will be replaced with actual Spotify integration
   const [currentSong, setCurrentSong] = useState({
     name: 'Connect to Spotify',
     artist: 'Add your credentials to get started',
@@ -29,7 +28,6 @@ const Index = () => {
   const handleHeartRateChange = (newHeartRate: number) => {
     setHeartRate(newHeartRate);
     
-    // Update zone based on heart rate
     if (newHeartRate < 100) {
       setZone('slow');
     } else if (newHeartRate < 120) {

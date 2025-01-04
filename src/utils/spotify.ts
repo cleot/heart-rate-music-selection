@@ -10,7 +10,7 @@ const SCOPES = [
   "playlist-read-collaborative",
 ];
 
-export const getSpotifyAuthUrl = () => {
+export const getSpotifyAuthUrl = async () => {
   const { data: { SPOTIFY_CLIENT_ID } } = await supabase.functions.invoke('get-spotify-client-id');
   
   const params = new URLSearchParams({
