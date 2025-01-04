@@ -2,6 +2,41 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bluetooth } from 'lucide-react';
 
+// Add Web Bluetooth API types
+declare global {
+  interface Navigator {
+    bluetooth: {
+      requestDevice(options: RequestDeviceOptions): Promise<BluetoothDevice>;
+    };
+  }
+
+  interface BluetoothDevice {
+    gatt?: {
+      connect(): Promise<BluetoothRemoteGATTServer>;
+    };
+  }
+
+  interface BluetoothRemoteGATTServer {
+    getPrimaryService(service: string): Promise<BluetoothRemoteGATTService>;
+  }
+
+  interface BluetoothRemoteGATTService {
+    getCharacteristic(characteristic: string): Promise<BluetoothRemoteGATTCharacteristic>;
+  }
+
+  interface BluetoothRemoteGATTCharacteristic {
+    startNotifications(): Promise<BluetoothRemoteGATTCharacteristic>;
+    addEventListener(
+      type: string,
+      listener: EventListener
+    ): void;
+  }
+
+  interface RequestDeviceOptions {
+    filters: Array<{ services?: string[] }>;
+  }
+}
+
 interface BluetoothConnectProps {
   onHeartRateChange: (heartRate: number) => void;
 }
