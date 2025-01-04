@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Music, Play, Pause, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface NowPlayingProps {
   currentSong: {
@@ -13,6 +14,7 @@ interface NowPlayingProps {
     name: string;
     artist: string;
     albumArt?: string;
+    zone?: 'slow' | 'medium' | 'fast';
   } | null;
   onPlayPause?: () => void;
   onNext?: () => void;
@@ -26,6 +28,32 @@ const NowPlaying: React.FC<NowPlayingProps> = ({
   onNext,
   isPlaying = false
 }) => {
+  const getZoneColor = (zone?: string) => {
+    switch (zone) {
+      case 'slow':
+        return 'bg-zones-slow';
+      case 'medium':
+        return 'bg-zones-medium';
+      case 'fast':
+        return 'bg-zones-fast';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  const getZoneLabel = (zone?: string) => {
+    switch (zone) {
+      case 'slow':
+        return 'Slow (0-100 BPM)';
+      case 'medium':
+        return 'Medium (100-120 BPM)';
+      case 'fast':
+        return 'Fast (120-160 BPM)';
+      default:
+        return 'Unknown Zone';
+    }
+  };
+
   return (
     <div className="space-y-4">
       <Card className="w-full">
@@ -87,7 +115,14 @@ const NowPlaying: React.FC<NowPlayingProps> = ({
               <div>
                 <div className="font-semibold text-sm text-muted-foreground">Up Next</div>
                 <div className="text-foreground">{nextSong.name}</div>
-                <div className="text-sm text-muted-foreground">{nextSong.artist}</div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">{nextSong.artist}</span>
+                  {nextSong.zone && (
+                    <Badge className={`${getZoneColor(nextSong.zone)} text-white`}>
+                      {getZoneLabel(nextSong.zone)}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>

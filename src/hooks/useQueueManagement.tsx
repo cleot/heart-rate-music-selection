@@ -4,7 +4,7 @@ import type { HeartRateZone } from '@/utils/heartRateZones';
 import { getPlaylistTracks, queueTrack } from '@/utils/spotifyUtils';
 
 export const useQueueManagement = () => {
-  const [nextSong, setNextSong] = useState(null);
+  const [nextSong, setNextSong] = useState<any>(null);
 
   const queueNextSongForZone = async (currentZone: HeartRateZone, playlists: any) => {
     if (!currentZone || !playlists[currentZone]) return;
@@ -42,7 +42,10 @@ export const useQueueManagement = () => {
 
       const randomTrack = tracks[Math.floor(Math.random() * tracks.length)];
       await queueTrack(randomTrack.uri, token);
-      setNextSong(randomTrack);
+      setNextSong({
+        ...randomTrack,
+        zone: currentZone
+      });
 
       toast({
         title: "Success",
