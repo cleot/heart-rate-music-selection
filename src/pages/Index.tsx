@@ -3,8 +3,12 @@ import HeartRateDisplay from '@/components/HeartRateDisplay';
 import BluetoothConnect from '@/components/BluetoothConnect';
 import SpotifyPlaylist from '@/components/SpotifyPlaylist';
 import NowPlaying from '@/components/NowPlaying';
+import { Button } from '@/components/ui/button';
+import { getSpotifyAuthUrl } from '@/utils/spotify';
+import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
+  const { toast } = useToast();
   const [heartRate, setHeartRate] = useState<number | null>(null);
   const [zone, setZone] = useState<'slow' | 'medium' | 'fast' | null>(null);
   const [playlists, setPlaylists] = useState({
@@ -12,6 +16,7 @@ const Index = () => {
     medium: '',
     fast: '',
   });
+  const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
 
   // Mock data for now - will be replaced with actual Spotify integration
   const [currentSong, setCurrentSong] = useState({
@@ -41,12 +46,35 @@ const Index = () => {
     }));
   };
 
+  const handleSpotifyLogin = async () => {
+    try {
+      const authUrl = await getSpotifyAuthUrl();
+      window.location.href = authUrl;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to connect to Spotify. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-spotify-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-6">Heart Rate Music Selector</h1>
-          <BluetoothConnect onHeartRateChange={handleHeartRateChange} />
+          <div className="flex justify-center gap-4">
+            <BluetoothConnect onHeartRateChange={handleHeartRateChange} />
+            {!isSpotifyConnected && (
+              <Button 
+                onClick={handleSpotifyLogin}
+                className="bg-green-500 hover:bg-green-600"
+              >
+                Connect Spotify
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
