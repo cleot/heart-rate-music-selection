@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import HeartRateDisplay from '@/components/HeartRateDisplay';
 import BluetoothConnect from '@/components/BluetoothConnect';
-import SpotifyPlaylist from '@/components/SpotifyPlaylist';
 import NowPlaying from '@/components/NowPlaying';
+import PlaylistManager from '@/components/PlaylistManager';
 import { Button } from '@/components/ui/button';
 import { getSpotifyAuthUrl } from '@/utils/spotify';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { getHeartRateZone, type HeartRateZone } from '@/utils/heartRateZones';
 
 const Index = () => {
   const { toast } = useToast();
   const [heartRate, setHeartRate] = useState<number | null>(null);
-  const [zone, setZone] = useState<'slow' | 'medium' | 'fast' | null>(null);
+  const [zone, setZone] = useState<HeartRateZone>(null);
   const [playlists, setPlaylists] = useState({
     slow: '',
     medium: '',
@@ -23,11 +23,11 @@ const Index = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    const checkSpotifyConnection = () => {
+    const checkSpotifyConnection = async () => {
       const token = localStorage.getItem('spotify_access_token');
       setIsSpotifyConnected(!!token);
       if (token) {
-        fetchCurrentPlayback(token);
+        await fetchCurrentPlayback(token);
       } else {
         setCurrentSong({
           name: 'Connect to Spotify',
@@ -40,6 +40,18 @@ const Index = () => {
     const interval = setInterval(checkSpotifyConnection, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    // Update zone when heart rate changes
+    const newZone = getHeartRateZone(heartRate);
+    if (newZone !== zone) {
+      setZone(newZone);
+      // Queue a new song when zone changes
+      if (newZone && isSpotifyConnected) {
+        queueNextSongForZone(newZone);
+      }
+    }
+  }, [heartRate]);
 
   const fetchCurrentPlayback = async (token: string) => {
     try {
@@ -83,6 +95,22 @@ const Index = () => {
     }
   };
 
+  const queueNextSongForZone = async (currentZone: HeartRateZone) => {
+    if (!currentZone || !playlists[currentZone]) return;
+    
+    const token = localStorage.getItem('spotify_access_token');
+    if (!token) return;
+
+    try {
+      const nextTrack = await handleQueueNextSong(currentZone, token);
+      if (nextTrack) {
+        setNextSong(nextTrack);
+      }
+    } catch (error) {
+      console.error('Error queueing next song:', error);
+    }
+  };
+
   const handlePlayPause = async () => {
     const token = localStorage.getItem('spotify_access_token');
     if (!token) return;
@@ -123,8 +151,11 @@ const Index = () => {
       });
 
       if (response.ok) {
-        // Wait a bit for Spotify to update
         setTimeout(() => fetchCurrentPlayback(token), 500);
+        // Queue next song based on current heart rate zone
+        if (zone) {
+          queueNextSongForZone(zone);
+        }
       }
     } catch (error) {
       console.error('Error skipping track:', error);
@@ -134,25 +165,6 @@ const Index = () => {
         variant: "destructive",
       });
     }
-  };
-
-  const handleHeartRateChange = (newHeartRate: number) => {
-    setHeartRate(newHeartRate);
-    
-    if (newHeartRate < 100) {
-      setZone('slow');
-    } else if (newHeartRate < 120) {
-      setZone('medium');
-    } else {
-      setZone('fast');
-    }
-  };
-
-  const handlePlaylistChange = (zone: 'slow' | 'medium' | 'fast', value: string) => {
-    setPlaylists(prev => ({
-      ...prev,
-      [zone]: value
-    }));
   };
 
   const handleSpotifyLogin = async () => {
@@ -174,7 +186,7 @@ const Index = () => {
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-6">Heart Rate Music Selector</h1>
           <div className="flex justify-center gap-4">
-            <BluetoothConnect onHeartRateChange={handleHeartRateChange} />
+            <BluetoothConnect onHeartRateChange={setHeartRate} />
             {!isSpotifyConnected && (
               <Button 
                 onClick={handleSpotifyLogin}
@@ -199,9 +211,10 @@ const Index = () => {
           </div>
           
           <div>
-            <SpotifyPlaylist
+            <PlaylistManager
               playlists={playlists}
-              onPlaylistChange={handlePlaylistChange}
+              onPlaylistChange={(zone, value) => setPlaylists(prev => ({ ...prev, [zone]: value }))}
+              currentZone={zone}
             />
           </div>
         </div>
