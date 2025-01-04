@@ -1,69 +1,136 @@
-# Welcome to your Lovable project
+# Heart Rate Music Selector
 
-## Project info
+A dynamic music player that automatically selects and queues songs from Spotify playlists based on your heart rate. The application adapts your music to your workout intensity in real-time.
 
-**URL**: https://lovable.dev/projects/abfaf641-f5cb-4f96-bc61-db0264d20436
+## Overview
 
-## How can I edit this code?
+This application connects to both a heart rate monitor (via Bluetooth) and Spotify to create a seamless workout experience. It automatically selects and queues songs that match your current exercise intensity based on your heart rate.
 
-There are several ways of editing your application.
+### Core Features
 
-**Use Lovable**
+- **Heart Rate Monitoring**: Connects to Bluetooth heart rate monitors to track your current BPM
+- **Dynamic Zone Detection**: Automatically categorizes your activity into three intensity zones:
+  - Slow Zone (0-100 BPM)
+  - Medium Zone (100-120 BPM)
+  - Fast Zone (120-160 BPM)
+- **Spotify Integration**: Automatically queues songs from different playlists based on your current heart rate zone
+- **Auto DJ**: Intelligently queues songs that match your current workout intensity
+- **Test Mode**: Includes a heart rate simulator slider for testing different scenarios
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/abfaf641-f5cb-4f96-bc61-db0264d20436) and start prompting.
+### Technical Architecture
 
-Changes made via Lovable will be committed automatically to this repo.
+#### Frontend Components
 
-**Use your preferred IDE**
+1. **HeartRateDisplay**
+   - Displays current heart rate and zone information
+   - Shows visual indicators for different intensity zones
+   - Includes Auto DJ toggle functionality
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. **BluetoothConnect**
+   - Manages Bluetooth device connection
+   - Handles heart rate monitor pairing
+   - Provides real-time heart rate updates
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. **NowPlaying**
+   - Shows currently playing track information
+   - Displays upcoming song with its corresponding zone
+   - Provides playback controls (play/pause, skip)
 
-Follow these steps:
+4. **PlaylistManager**
+   - Manages Spotify playlist configuration
+   - Allows setting different playlists for each heart rate zone
+   - Validates and displays playlist information
+
+#### Core Logic
+
+1. **Heart Rate Processing**
+   - Continuously monitors heart rate data
+   - Determines current activity zone
+   - Triggers playlist changes when crossing zone boundaries
+
+2. **Spotify Integration**
+   - Handles Spotify authentication
+   - Manages playlist fetching and track queueing
+   - Controls playback state
+
+3. **Queue Management**
+   - Selects appropriate songs based on current zone
+   - Manages the "Up Next" functionality
+   - Handles automatic song queueing
+
+### Technologies Used
+
+- **Frontend Framework**: React with TypeScript
+- **Build Tool**: Vite
+- **Styling**: 
+  - Tailwind CSS for responsive design
+  - shadcn/ui for UI components
+- **State Management**: React Query for API state
+- **APIs and Integration**:
+  - Web Bluetooth API for heart rate monitoring
+  - Spotify Web API for music playback
+- **Authentication**: OAuth 2.0 for Spotify integration
+
+### Project Structure
+
+```
+src/
+├── components/           # React components
+│   ├── BluetoothConnect # Bluetooth connection handling
+│   ├── HeartRateDisplay # Heart rate visualization
+│   ├── NowPlaying      # Music player interface
+│   └── PlaylistManager # Playlist configuration
+├── hooks/               # Custom React hooks
+│   ├── usePlaybackControls   # Spotify playback logic
+│   ├── useQueueManagement    # Song queue handling
+│   └── useSpotifyConnection  # Spotify authentication
+├── utils/               # Utility functions
+│   ├── heartRateZones  # Zone calculation logic
+│   └── spotify         # Spotify API helpers
+└── pages/              # Application pages
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js & npm installed
+- A Spotify Premium account
+- A Bluetooth heart rate monitor (optional - includes test mode)
+
+### Development Setup
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Configuration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Connect your heart rate monitor via Bluetooth
+2. Authenticate with Spotify
+3. Configure playlists for each zone:
+   - Slow (0-100 BPM)
+   - Medium (100-120 BPM)
+   - Fast (120-160 BPM)
+4. Enable Auto DJ to start automatic song selection
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
+## Deployment
 
 Simply open [Lovable](https://lovable.dev/projects/abfaf641-f5cb-4f96-bc61-db0264d20436) and click on Share -> Publish.
 
-## I want to use a custom domain - is that possible?
+For custom domain deployment, we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## Contributing
+
+Feel free to submit issues and enhancement requests!
+
+## License
+
+This project is open source and available under the MIT License.
