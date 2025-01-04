@@ -87,6 +87,28 @@ const Index = () => {
     }
   };
 
+  const handleQueueSong = () => {
+    if (!isSpotifyConnected) {
+      toast({
+        title: "Error",
+        description: "Please connect to Spotify first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!zone) {
+      toast({
+        title: "Error",
+        description: "No heart rate zone detected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    queueNextSongForZone(zone, playlists);
+  };
+
   const handleTestHeartRateChange = (value: number[]) => {
     setHeartRate(value[0]);
   };
@@ -131,6 +153,7 @@ const Index = () => {
               zone={zone} 
               isAutoPlayEnabled={isAutoPlayEnabled}
               onAutoPlayToggle={handleAutoPlayToggle}
+              onQueueSong={handleQueueSong}
             />
             <NowPlaying 
               currentSong={currentSong} 
