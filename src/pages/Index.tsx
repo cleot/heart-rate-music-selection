@@ -14,9 +14,9 @@ const Index = () => {
   const [heartRate, setHeartRate] = useState<number | null>(null);
   const [zone, setZone] = useState<HeartRateZone>(null);
   const [playlists, setPlaylists] = useState({
-    slow: '',
-    medium: '',
-    fast: '',
+    slow: 'https://open.spotify.com/playlist/1h0CEZCm6IbFTbxThn6Xcs',
+    medium: 'https://open.spotify.com/playlist/62bReXvmroQzQfEUuTNe3Y',
+    fast: 'https://open.spotify.com/playlist/5arPxjufbwwMkIu8YGbF5U',
   });
   const [isAutoPlayEnabled, setIsAutoPlayEnabled] = useState(false);
 
