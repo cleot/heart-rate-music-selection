@@ -28,15 +28,22 @@ export const getPlaylistTracks = async (playlistUrl: string, token: string) => {
 };
 
 export const queueTrack = async (trackUri: string, token: string) => {
-  const response = await fetch('https://api.spotify.com/v1/me/player/queue', {
+  console.log('Queueing track:', trackUri);
+  
+  const response = await fetch(`https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(trackUri)}`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify({ uri: trackUri }),
+    }
   });
 
+  if (response.status === 404) {
+    throw new Error('No active device found. Please start playback in Spotify first.');
+  }
+
   if (!response.ok) {
-    throw new Error('Failed to queue track');
+    const errorText = await response.text();
+    console.error('Queue error response:', errorText);
+    throw new Error(`Failed to queue track (${response.status})`);
   }
 };

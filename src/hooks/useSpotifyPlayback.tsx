@@ -110,6 +110,22 @@ export const useSpotifyPlayback = () => {
     if (!token) return;
 
     try {
+      // First check if there's an active device
+      const deviceResponse = await fetch('https://api.spotify.com/v1/me/player', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (deviceResponse.status === 204) {
+        toast({
+          title: "No Active Device",
+          description: "Please start playing music in Spotify first",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const playlistUrl = playlists[currentZone];
       const tracks = await getPlaylistTracks(playlistUrl, token);
       
@@ -134,7 +150,7 @@ export const useSpotifyPlayback = () => {
       console.error('Error queueing next song:', error);
       toast({
         title: "Error",
-        description: "Failed to queue next song",
+        description: error instanceof Error ? error.message : "Failed to queue next song",
         variant: "destructive",
       });
     }
