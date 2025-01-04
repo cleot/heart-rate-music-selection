@@ -2,7 +2,12 @@ import { supabase } from "@/integrations/supabase/client";
 
 const SPOTIFY_AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const SPOTIFY_TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
-const REDIRECT_URI = "http://localhost:8080/callback";
+
+// Determine the redirect URI based on the environment
+const REDIRECT_URI = window.location.hostname === 'localhost' 
+  ? "http://localhost:8080/callback"
+  : `${window.location.origin}/callback`;
+
 const SCOPES = [
   "user-read-playback-state",
   "user-modify-playback-state",
@@ -26,7 +31,7 @@ export const getSpotifyAuthUrl = async () => {
 
 export const getSpotifyToken = async (code: string) => {
   const response = await supabase.functions.invoke('spotify-token', {
-    body: { code }
+    body: { code, redirectUri: REDIRECT_URI }
   });
   
   return response.data;
