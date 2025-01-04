@@ -70,14 +70,14 @@ const NowPlaying: React.FC<NowPlayingProps> = ({
       </Card>
 
       {nextSong && (
-        <Card className="w-full bg-black/10">
+        <Card className="w-full bg-card">
           <CardContent className="p-4">
             <div className="flex items-center space-x-4">
               {nextSong.albumArt ? (
                 <img
                   src={nextSong.albumArt}
                   alt="Album art"
-                  className="w-12 h-12 rounded-md opacity-70"
+                  className="w-12 h-12 rounded-md"
                 />
               ) : (
                 <div className="w-12 h-12 bg-black/20 rounded-md flex items-center justify-center">
@@ -85,9 +85,9 @@ const NowPlaying: React.FC<NowPlayingProps> = ({
                 </div>
               )}
               <div>
-                <div className="font-semibold text-sm text-gray-400">Up Next</div>
-                <div>{nextSong.name}</div>
-                <div className="text-sm text-gray-400">{nextSong.artist}</div>
+                <div className="font-semibold text-sm text-muted-foreground">Up Next</div>
+                <div className="text-foreground">{nextSong.name}</div>
+                <div className="text-sm text-muted-foreground">{nextSong.artist}</div>
               </div>
             </div>
           </CardContent>
