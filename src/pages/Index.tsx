@@ -30,13 +30,6 @@ const Index = () => {
     queueNextSongForZone
   } = useSpotifyPlayback();
 
-  // Queue a new song whenever the next song display is cleared
-  useEffect(() => {
-    if (isAutoPlayEnabled && isSpotifyConnected && !nextSong && zone) {
-      queueNextSongForZone(zone, playlists);
-    }
-  }, [nextSong, zone, isAutoPlayEnabled, isSpotifyConnected, playlists, queueNextSongForZone]);
-
   useEffect(() => {
     // Update zone when heart rate changes
     const newZone = getHeartRateZone(heartRate);

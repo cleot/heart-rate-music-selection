@@ -8,7 +8,6 @@ export const useSpotifyPlayback = () => {
   const [nextSong, setNextSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
-  const [lastQueuedSongUri, setLastQueuedSongUri] = useState<string | null>(null);
 
   const fetchCurrentPlayback = async (token: string) => {
     try {
@@ -30,15 +29,6 @@ export const useSpotifyPlayback = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.item) {
-          const currentTrackUri = data.item.uri;
-          
-          // If the current playing song matches our last queued song,
-          // clear the next song display and queue a new one
-          if (currentTrackUri === lastQueuedSongUri) {
-            setNextSong(null);
-            setLastQueuedSongUri(null);
-          }
-
           setCurrentSong({
             name: data.item.name,
             artist: data.item.artists.map((artist: any) => artist.name).join(', '),
@@ -101,9 +91,6 @@ export const useSpotifyPlayback = () => {
       });
 
       if (response.ok) {
-        // Clear the next song display since we're skipping to it
-        setNextSong(null);
-        setLastQueuedSongUri(null);
         setTimeout(() => fetchCurrentPlayback(token), 500);
       }
     } catch (error) {
@@ -154,7 +141,6 @@ export const useSpotifyPlayback = () => {
       const randomTrack = tracks[Math.floor(Math.random() * tracks.length)];
       await queueTrack(randomTrack.uri, token);
       setNextSong(randomTrack);
-      setLastQueuedSongUri(randomTrack.uri);
 
       toast({
         title: "Success",
@@ -185,7 +171,7 @@ export const useSpotifyPlayback = () => {
     };
 
     checkSpotifyConnection();
-    const interval = setInterval(checkSpotifyConnection, 1000); // Checking more frequently
+    const interval = setInterval(checkSpotifyConnection, 5000);
     return () => clearInterval(interval);
   }, []);
 
