@@ -16,7 +16,7 @@ serve(async (req) => {
     
     const clientId = Deno.env.get('SPOTIFY_CLIENT_ID')
     const clientSecret = Deno.env.get('SPOTIFY_CLIENT_SECRET')
-    const redirectUri = 'http://localhost:5173/callback'
+    const redirectUri = 'http://localhost:8080/callback'
 
     const response = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',

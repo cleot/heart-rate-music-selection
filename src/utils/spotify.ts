@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const SPOTIFY_AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const SPOTIFY_TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
-const REDIRECT_URI = "http://localhost:5173/callback";
+const REDIRECT_URI = "http://localhost:8080/callback";
 const SCOPES = [
   "user-read-playback-state",
   "user-modify-playback-state",
