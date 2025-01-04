@@ -3,6 +3,7 @@ import HeartRateDisplay from '@/components/HeartRateDisplay';
 import BluetoothConnect from '@/components/BluetoothConnect';
 import NowPlaying from '@/components/NowPlaying';
 import PlaylistManager from '@/components/PlaylistManager';
+import SpotifyProfile from '@/components/SpotifyProfile';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -117,7 +118,10 @@ const Index = () => {
     <div className="min-h-screen bg-spotify-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-6">Heart Rate Music Selector</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Heart Rate Music Selector</h1>
+            <SpotifyProfile />
+          </div>
           <div className="flex justify-center gap-4">
             <BluetoothConnect onHeartRateChange={setHeartRate} />
             {!isSpotifyConnected && (
