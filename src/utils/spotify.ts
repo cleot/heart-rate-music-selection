@@ -3,10 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 const SPOTIFY_AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const SPOTIFY_TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
 
+// Get the base URL for the current environment
+const getBaseUrl = () => {
+  // Check if we're in development
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8080';
+  }
+  // Otherwise use the current origin (works for production and custom domains)
+  return window.location.origin;
+};
+
 // Determine the redirect URI based on the environment
-const REDIRECT_URI = window.location.hostname === 'localhost' 
-  ? "http://localhost:8080/callback"
-  : `${window.location.origin}/callback`;
+const REDIRECT_URI = `${getBaseUrl()}/callback`;
 
 const SCOPES = [
   "user-read-playback-state",
@@ -25,6 +33,8 @@ export const getSpotifyAuthUrl = async () => {
     scope: SCOPES.join(" "),
     show_dialog: "true",
   });
+
+  console.log('Redirect URI:', REDIRECT_URI); // Helpful for debugging
 
   return `${SPOTIFY_AUTH_ENDPOINT}?${params.toString()}`;
 };
