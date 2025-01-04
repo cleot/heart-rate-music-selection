@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bluetooth } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 // Add Web Bluetooth API types
 declare global {
@@ -42,9 +43,32 @@ interface BluetoothConnectProps {
 }
 
 const BluetoothConnect: React.FC<BluetoothConnectProps> = ({ onHeartRateChange }) => {
+  const { toast } = useToast();
   const [isConnected, setIsConnected] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
+
+  useEffect(() => {
+    // Check if Web Bluetooth API is supported
+    if (!navigator.bluetooth) {
+      setIsSupported(false);
+      toast({
+        title: "Bluetooth Not Supported",
+        description: "Your browser doesn't support Bluetooth connections. Please use Chrome on desktop or Android.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   const connectToDevice = async () => {
+    if (!isSupported) {
+      toast({
+        title: "Bluetooth Not Supported",
+        description: "Your browser doesn't support Bluetooth connections. Please use Chrome on desktop or Android.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const device = await navigator.bluetooth.requestDevice({
         filters: [{ services: ['heart_rate'] }],
@@ -62,8 +86,17 @@ const BluetoothConnect: React.FC<BluetoothConnectProps> = ({ onHeartRateChange }
       });
 
       setIsConnected(true);
+      toast({
+        title: "Connected",
+        description: "Successfully connected to heart rate monitor.",
+      });
     } catch (error) {
       console.error('Error connecting to device:', error);
+      toast({
+        title: "Connection Failed",
+        description: error instanceof Error ? error.message : "Failed to connect to heart rate monitor.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -71,6 +104,7 @@ const BluetoothConnect: React.FC<BluetoothConnectProps> = ({ onHeartRateChange }
     <Button
       onClick={connectToDevice}
       className={`gap-2 ${isConnected ? 'bg-spotify-green hover:bg-spotify-green/90' : ''}`}
+      disabled={!isSupported}
     >
       <Bluetooth className="w-4 h-4" />
       {isConnected ? 'Connected' : 'Connect Heart Rate Monitor'}
