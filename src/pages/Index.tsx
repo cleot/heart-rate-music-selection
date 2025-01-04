@@ -20,6 +20,7 @@ const Index = () => {
   const [isSpotifyConnected, setIsSpotifyConnected] = useState(false);
   const [currentSong, setCurrentSong] = useState<any>(null);
   const [nextSong, setNextSong] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const checkSpotifyConnection = () => {
@@ -53,6 +54,7 @@ const Index = () => {
           name: 'No track playing',
           artist: 'Play a track on Spotify',
         });
+        setIsPlaying(false);
         return;
       }
 
@@ -64,9 +66,9 @@ const Index = () => {
             artist: data.item.artists.map((artist: any) => artist.name).join(', '),
             albumArt: data.item.album.images[0]?.url,
           });
+          setIsPlaying(data.is_playing);
         }
       } else {
-        // Token might be expired, clear it
         if (response.status === 401) {
           localStorage.removeItem('spotify_access_token');
           setIsSpotifyConnected(false);
@@ -78,6 +80,59 @@ const Index = () => {
       }
     } catch (error) {
       console.error('Error fetching current playback:', error);
+    }
+  };
+
+  const handlePlayPause = async () => {
+    const token = localStorage.getItem('spotify_access_token');
+    if (!token) return;
+
+    try {
+      const endpoint = isPlaying ? 'pause' : 'play';
+      const response = await fetch(`https://api.spotify.com/v1/me/player/${endpoint}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        setIsPlaying(!isPlaying);
+        fetchCurrentPlayback(token);
+      }
+    } catch (error) {
+      console.error('Error controlling playback:', error);
+      toast({
+        title: "Error",
+        description: "Failed to control playback. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleNext = async () => {
+    const token = localStorage.getItem('spotify_access_token');
+    if (!token) return;
+
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me/player/next', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        // Wait a bit for Spotify to update
+        setTimeout(() => fetchCurrentPlayback(token), 500);
+      }
+    } catch (error) {
+      console.error('Error skipping track:', error);
+      toast({
+        title: "Error",
+        description: "Failed to skip track. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -134,7 +189,13 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-8">
             <HeartRateDisplay heartRate={heartRate} zone={zone} />
-            <NowPlaying currentSong={currentSong} nextSong={nextSong} />
+            <NowPlaying 
+              currentSong={currentSong} 
+              nextSong={nextSong}
+              onPlayPause={handlePlayPause}
+              onNext={handleNext}
+              isPlaying={isPlaying}
+            />
           </div>
           
           <div>

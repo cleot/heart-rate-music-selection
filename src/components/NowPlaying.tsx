@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Music } from 'lucide-react';
+import { Music, Play, Pause, SkipForward } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface NowPlayingProps {
   currentSong: {
@@ -13,9 +14,18 @@ interface NowPlayingProps {
     artist: string;
     albumArt?: string;
   } | null;
+  onPlayPause?: () => void;
+  onNext?: () => void;
+  isPlaying?: boolean;
 }
 
-const NowPlaying: React.FC<NowPlayingProps> = ({ currentSong, nextSong }) => {
+const NowPlaying: React.FC<NowPlayingProps> = ({ 
+  currentSong, 
+  nextSong, 
+  onPlayPause,
+  onNext,
+  isPlaying = false
+}) => {
   return (
     <div className="space-y-4">
       <Card className="w-full">
@@ -32,10 +42,28 @@ const NowPlaying: React.FC<NowPlayingProps> = ({ currentSong, nextSong }) => {
                 <Music className="w-8 h-8 text-gray-400" />
               </div>
             )}
-            <div>
+            <div className="flex-1">
               <div className="font-semibold">Now Playing</div>
               <div className="text-lg">{currentSong?.name ?? 'Not playing'}</div>
               <div className="text-sm text-gray-400">{currentSong?.artist}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onPlayPause}
+                disabled={!currentSong || currentSong.name === 'Connect to Spotify'}
+              >
+                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onNext}
+                disabled={!currentSong || currentSong.name === 'Connect to Spotify'}
+              >
+                <SkipForward className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </CardContent>
