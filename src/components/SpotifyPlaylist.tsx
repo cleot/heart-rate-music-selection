@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
 
 interface PlaylistConfig {
   slow: string;
@@ -22,6 +23,19 @@ const SpotifyPlaylist: React.FC<SpotifyPlaylistProps> = ({ playlists, onPlaylist
     fast: '',
   });
 
+  const extractPlaylistId = (url: string) => {
+    try {
+      // Handle both full URLs and just IDs
+      if (url.includes('spotify.com')) {
+        const matches = url.match(/playlist\/([\w\d]+)/);
+        return matches ? matches[1].split('?')[0] : null;
+      }
+      return url;
+    } catch (error) {
+      return null;
+    }
+  };
+
   const fetchPlaylistName = async (url: string, zone: keyof PlaylistConfig) => {
     if (!url) {
       setPlaylistNames(prev => ({ ...prev, [zone]: '' }));
@@ -29,19 +43,40 @@ const SpotifyPlaylist: React.FC<SpotifyPlaylistProps> = ({ playlists, onPlaylist
     }
 
     try {
-      const playlistId = url.split('/').pop()?.split('?')[0];
-      if (!playlistId) throw new Error('Invalid playlist URL');
+      const playlistId = extractPlaylistId(url);
+      if (!playlistId) {
+        throw new Error('Invalid playlist URL');
+      }
 
       const token = localStorage.getItem('spotify_access_token');
-      if (!token) throw new Error('Not connected to Spotify');
+      if (!token) {
+        toast({
+          title: "Not Connected",
+          description: "Please connect to Spotify first",
+          variant: "destructive",
+        });
+        return;
+      }
 
+      console.log('Fetching playlist with ID:', playlistId);
       const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
-      if (!response.ok) throw new Error('Failed to fetch playlist');
+      if (response.status === 401) {
+        toast({
+          title: "Session Expired",
+          description: "Please reconnect to Spotify",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch playlist (${response.status})`);
+      }
 
       const data = await response.json();
       setPlaylistNames(prev => ({ ...prev, [zone]: data.name }));
@@ -54,7 +89,7 @@ const SpotifyPlaylist: React.FC<SpotifyPlaylistProps> = ({ playlists, onPlaylist
       setPlaylistNames(prev => ({ ...prev, [zone]: '' }));
       toast({
         title: "Error",
-        description: "Failed to fetch playlist information",
+        description: error instanceof Error ? error.message : "Failed to fetch playlist information",
         variant: "destructive",
       });
     }
