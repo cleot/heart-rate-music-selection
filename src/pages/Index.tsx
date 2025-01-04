@@ -4,6 +4,8 @@ import BluetoothConnect from '@/components/BluetoothConnect';
 import NowPlaying from '@/components/NowPlaying';
 import PlaylistManager from '@/components/PlaylistManager';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 import { getSpotifyAuthUrl } from '@/utils/spotify';
 import { useToast } from '@/hooks/use-toast';
 import { getHeartRateZone, type HeartRateZone } from '@/utils/heartRateZones';
@@ -31,11 +33,9 @@ const Index = () => {
   } = useSpotifyPlayback();
 
   useEffect(() => {
-    // Update zone when heart rate changes
     const newZone = getHeartRateZone(heartRate);
     if (newZone !== zone) {
       setZone(newZone);
-      // Queue a new song when zone changes and auto play is enabled
       if (newZone && isSpotifyConnected && isAutoPlayEnabled) {
         queueNextSongForZone(newZone, playlists);
       }
@@ -82,10 +82,13 @@ const Index = () => {
         : "Automatic song selection has been disabled",
     });
 
-    // Queue first song immediately when enabling
     if (!isAutoPlayEnabled && zone) {
       queueNextSongForZone(zone, playlists);
     }
+  };
+
+  const handleTestHeartRateChange = (value: number[]) => {
+    setHeartRate(value[0]);
   };
 
   return (
@@ -103,6 +106,21 @@ const Index = () => {
                 Connect Spotify
               </Button>
             )}
+          </div>
+          
+          <div className="mt-6 max-w-sm mx-auto">
+            <Label htmlFor="test-heart-rate" className="text-sm text-gray-400 mb-2 block">
+              Test Heart Rate (BPM)
+            </Label>
+            <Slider
+              id="test-heart-rate"
+              max={200}
+              min={50}
+              step={1}
+              value={heartRate ? [heartRate] : [80]}
+              onValueChange={handleTestHeartRateChange}
+              className="my-4"
+            />
           </div>
         </div>
 
