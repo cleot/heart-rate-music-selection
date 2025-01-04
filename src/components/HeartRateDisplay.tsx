@@ -1,12 +1,20 @@
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, Play, Square } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface HeartRateDisplayProps {
   heartRate: number | null;
   zone: 'slow' | 'medium' | 'fast' | null;
+  isAutoPlayEnabled: boolean;
+  onAutoPlayToggle: () => void;
 }
 
-const HeartRateDisplay: React.FC<HeartRateDisplayProps> = ({ heartRate, zone }) => {
+const HeartRateDisplay: React.FC<HeartRateDisplayProps> = ({ 
+  heartRate, 
+  zone,
+  isAutoPlayEnabled,
+  onAutoPlayToggle
+}) => {
   const getZoneColor = () => {
     switch (zone) {
       case 'slow':
@@ -32,6 +40,25 @@ const HeartRateDisplay: React.FC<HeartRateDisplayProps> = ({ heartRate, zone }) 
           {zone} Zone
         </div>
       )}
+      <div className="mt-6">
+        <Button
+          onClick={onAutoPlayToggle}
+          variant={isAutoPlayEnabled ? "destructive" : "default"}
+          className="gap-2"
+        >
+          {isAutoPlayEnabled ? (
+            <>
+              <Square className="h-4 w-4" />
+              Stop Auto DJ
+            </>
+          ) : (
+            <>
+              <Play className="h-4 w-4" />
+              Start Auto DJ
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 };
