@@ -2,6 +2,20 @@
 
 Demo: [https://heart-rate-music-selection.clemens.page](https://heart-rate-music-selection.clemens.page)
 
+COM503: Cloudservice Prototyp
+
+Konzept: Integration von Herzfrequenzdaten in die Musikauswahl (Katrin Hinterdorfer, BA)
+
+Gruppenmitglieder:
+
+- Clemens Otto
+- Katrin Hinterdorfer
+- Sabine Köck
+
+
+## 
+
+
 ![Heart Rate Music Selector](preview.png)
 
 A dynamic music player that automatically selects and queues songs from Spotify playlists based on your heart rate. The application adapts your music to your workout intensity in real-time.
@@ -100,22 +114,10 @@ src/
 
 ### Prerequisites
 
-- Node.js & npm installed
+- Node.js, npm, bun installed
 - A Spotify Premium account
-- A Bluetooth heart rate monitor (optional - includes test mode)
-
-### Development Setup
-
-```sh
-# Clone the repository
-git clone <YOUR_GIT_URL>
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
+- Spotify Developer App Credentials
+- Optional: A Bluetooth heart rate monitor (includes test mode)
 
 ### Configuration
 
@@ -129,14 +131,56 @@ npm run dev
 
 ## Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/abfaf641-f5cb-4f96-bc61-db0264d20436) and click on Share -> Publish.
+### Spotify App API Callback
 
-For custom domain deployment, we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+Redirect URIs
 
-## Contributing
+- http://localhost:8080/callback
+- https://heart-rate-music-selection.clemens.page/callback
 
-Feel free to submit issues and enhancement requests!
+### Development Setup
 
-## License
+```sh
+# Clone the repository
+git clone https://github.com/cleot/heart-rate-music-selection.git
 
-This project is open source and available under the MIT License.
+# Install dependencies
+bun install
+
+# copy env
+cp .env.example .env
+
+# add credentials
+
+VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id
+VITE_SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+
+
+# Start development server
+npm run dev
+```
+
+
+### Production Setup
+
+
+#### Cloudflare Pages
+
+Build configuration
+
+- Framework preset: React (Vite)
+- Build command: npm run build
+- Build output directory: dist
+
+Variables and Secrets
+
+- VITE_SPOTIFY_CLIENT_SECRET
+- VITE_SPOTIFY_CLIENT_ID
+
+
+#### Spotify App Callback
+
+Redirect URIs
+
+- http://localhost:8080/callback
+- https://heart-rate-music-selection.clemens.page/callback
