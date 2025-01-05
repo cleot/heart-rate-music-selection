@@ -1,5 +1,4 @@
 const SPOTIFY_AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
-const SPOTIFY_TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
 
 // Get the base URL for the current environment
 const getBaseUrl = () => {
@@ -30,30 +29,23 @@ export const getSpotifyAuthUrl = async () => {
     show_dialog: "true",
   });
 
-  console.log('Redirect URI:', REDIRECT_URI); // Helpful for debugging
+  console.log('Redirect URI:', REDIRECT_URI);
 
   return `${SPOTIFY_AUTH_ENDPOINT}?${params.toString()}`;
 };
 
 export const getSpotifyToken = async (code: string) => {
-  const params = new URLSearchParams({
-    grant_type: 'authorization_code',
-    code,
-    redirect_uri: REDIRECT_URI,
-    client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-    client_secret: import.meta.env.VITE_SPOTIFY_CLIENT_SECRET,
-  });
-
-  const response = await fetch(SPOTIFY_TOKEN_ENDPOINT, {
+  const response = await fetch('/spotify-auth', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
     },
-    body: params,
+    body: JSON.stringify({ code }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to get Spotify token');
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to get Spotify token');
   }
 
   return response.json();
