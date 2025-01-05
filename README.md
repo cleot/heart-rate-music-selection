@@ -183,3 +183,10 @@ Redirect URIs
 
 - http://localhost:8080/callback
 - https://heart-rate-music-selection.clemens.page/callback
+
+
+## Tools
+
+- loveable.dev (based on GPT Engineer)
+- ChatGPT-o1
+- Cloudflare Pages
