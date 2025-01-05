@@ -1,5 +1,9 @@
 # Heart Rate Music Selector
 
+Demo: [https://heart-rate-music-selection.clemens.page](https://heart-rate-music-selection.clemens.page)
+
+![Heart Rate Music Selector](preview.png)
+
 A dynamic music player that automatically selects and queues songs from Spotify playlists based on your heart rate. The application adapts your music to your workout intensity in real-time.
 
 ## Overview
