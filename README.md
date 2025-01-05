@@ -1,7 +1,5 @@
 # Heart Rate Music Selector
 
-Demo: [https://heart-rate-music-selection.clemens.page](https://heart-rate-music-selection.clemens.page)
-
 COM503: Cloudservice Prototyp
 
 Konzept: Integration von Herzfrequenzdaten in die Musikauswahl (Katrin Hinterdorfer, BA)
@@ -13,8 +11,9 @@ Gruppenmitglieder:
 - Sabine Köck
 
 
-## 
+Demo: [https://heart-rate-music-selection.clemens.page](https://heart-rate-music-selection.clemens.page)
 
+(Note: Spotify users must be whitelisted to access the app in development mode.)
 
 ![Heart Rate Music Selector](preview.png)
 
