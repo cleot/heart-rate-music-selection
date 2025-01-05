@@ -6,6 +6,8 @@ Demo: [https://heart-rate-music-selection.clemens.page](https://heart-rate-music
 
 A dynamic music player that automatically selects and queues songs from Spotify playlists based on your heart rate. The application adapts your music to your workout intensity in real-time.
 
+![Demo](demo.png)
+
 ## Overview
 
 This application connects to both a heart rate monitor (via Bluetooth) and Spotify to create a seamless workout experience. It automatically selects and queues songs that match your current exercise intensity based on your heart rate.
