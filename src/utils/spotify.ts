@@ -1,5 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
-
 const SPOTIFY_AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const SPOTIFY_TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
 
@@ -24,10 +22,8 @@ const SCOPES = [
 ];
 
 export const getSpotifyAuthUrl = async () => {
-  const { data: { SPOTIFY_CLIENT_ID } } = await supabase.functions.invoke('get-spotify-client-id');
-  
   const params = new URLSearchParams({
-    client_id: SPOTIFY_CLIENT_ID,
+    client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
     response_type: "code",
     redirect_uri: REDIRECT_URI,
     scope: SCOPES.join(" "),
@@ -40,11 +36,27 @@ export const getSpotifyAuthUrl = async () => {
 };
 
 export const getSpotifyToken = async (code: string) => {
-  const response = await supabase.functions.invoke('spotify-token', {
-    body: { code, redirectUri: REDIRECT_URI }
+  const params = new URLSearchParams({
+    grant_type: 'authorization_code',
+    code,
+    redirect_uri: REDIRECT_URI,
+    client_id: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
+    client_secret: import.meta.env.VITE_SPOTIFY_CLIENT_SECRET,
   });
-  
-  return response.data;
+
+  const response = await fetch(SPOTIFY_TOKEN_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: params,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to get Spotify token');
+  }
+
+  return response.json();
 };
 
 export const getPlaylistTracks = async (playlistId: string, accessToken: string) => {
