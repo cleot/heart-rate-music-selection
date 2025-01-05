@@ -25,3 +25,6 @@ dist-ssr
 
 # Ignore npm lockfile
 package-lock.json
+
+# env
+.env
