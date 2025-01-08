@@ -1,4 +1,4 @@
-# Heart Rate Music Selector
+# Heart Rate Music App
 
 COM503: Cloudservice Prototyp
 
